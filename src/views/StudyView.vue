@@ -50,12 +50,8 @@ const { currentStudy } = useStudyStore()
 
 // Configure marked options
 marked.setOptions({
-  gfm: true, // GitHub Flavored Markdown
-  breaks: true, // Convert \n to <br>
-  headerIds: true, // Add IDs to headers
-  mangle: false, // Don't escape HTML
-  smartLists: true, // Use smarter list behavior
-  smartypants: true // Use smart punctuation
+  gfm: true,
+  breaks: true
 })
 
 const parsedContent = computed(() => {
@@ -67,11 +63,9 @@ const parsedContent = computed(() => {
     .replace(/\n{3,}/g, '\n\n') // Remove excessive line breaks
     .trim()
   
-  // Convert markdown to HTML
-  const html = marked(content)
-  
-  // Sanitize HTML to prevent XSS
-  return DOMPurify.sanitize(html)
+  // Convert markdown to HTML and sanitize
+  const rawHtml = marked.parse(content)
+  return typeof rawHtml === 'string' ? DOMPurify.sanitize(rawHtml) : ''
 })
 
 onMounted(() => {
