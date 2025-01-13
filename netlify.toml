@@ -3,6 +3,18 @@
   publish = "dist"
 
 [[redirects]]
+  from = "/api/maritaca"
+  to = "https://chat.maritaca.ai/api/chat/completions"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api"
+  to = "https://openscriptureapi.org"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
