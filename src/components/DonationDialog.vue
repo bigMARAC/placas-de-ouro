@@ -1,5 +1,5 @@
 <template>
-  <v-dialog :model-value="open" @update:model-value="$emit('update:open')" max-width="400">
+  <v-dialog :model-value="open" @update:model-value="(value) => $emit('update:open', value)" max-width="400">
     <v-card>
       <v-card-title class="text-center pa-4">
         Apoie com PIX
@@ -51,13 +51,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const props = defineProps<{
+defineProps<{
   open: boolean
 }>()
 
-defineEmits<{
-  'update:open': [value: boolean]
-}>()
+defineEmits(['update:open'])
 
 const showCopySuccess = ref(false)
 const pixKey = ref(import.meta.env.VITE_PIX_KEY)
