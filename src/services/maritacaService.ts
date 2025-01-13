@@ -29,7 +29,7 @@ export const generateStudy = async (book: string, chapter: string, verse: string
   Esta é a tradução original para inglês: "${text}"`
 
   const request: MaritacaRequest = {
-    model: "sabiazinho-3",
+    model: "sabia-3",
     messages: [
       {
         role: 'user',
