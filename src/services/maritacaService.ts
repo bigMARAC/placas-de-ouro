@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://chat.maritaca.ai/api/chat/completions';
+const API_URL = '/api/maritaca';
 const API_KEY = import.meta.env.VITE_MARITACA_API_KEY;
 
 interface MaritacaResponse {

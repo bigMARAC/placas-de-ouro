@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'https://openscriptureapi.org/api/scriptures/v1/lds/en/book';
+const BASE_URL = '/api/scriptures/v1/lds/en/book';
 
 interface ScriptureResponse {
   chapter: {
