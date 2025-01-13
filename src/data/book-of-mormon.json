@@ -1,0 +1,79 @@
+{
+  "books": [
+    {
+      "title": "1 Néfi",
+      "value": "1nephi",
+      "chapters": 22
+    },
+    {
+      "title": "2 Néfi",
+      "value": "2nephi",
+      "chapters": 33
+    },
+    {
+      "title": "Jacó",
+      "value": "jacob",
+      "chapters": 7
+    },
+    {
+      "title": "Enos",
+      "value": "enos",
+      "chapters": 1
+    },
+    {
+      "title": "Jarom",
+      "value": "jarom",
+      "chapters": 1
+    },
+    {
+      "title": "Ômni",
+      "value": "omni",
+      "chapters": 1
+    },
+    {
+      "title": "Palavras de Mórmon",
+      "value": "wordsofmormon",
+      "chapters": 1
+    },
+    {
+      "title": "Mosias",
+      "value": "mosiah",
+      "chapters": 29
+    },
+    {
+      "title": "Alma",
+      "value": "alma",
+      "chapters": 63
+    },
+    {
+      "title": "Helamã",
+      "value": "helaman",
+      "chapters": 16
+    },
+    {
+      "title": "3 Néfi",
+      "value": "3nephi",
+      "chapters": 30
+    },
+    {
+      "title": "4 Néfi",
+      "value": "4nephi",
+      "chapters": 1
+    },
+    {
+      "title": "Mórmon",
+      "value": "mormon",
+      "chapters": 9
+    },
+    {
+      "title": "Éter",
+      "value": "ether",
+      "chapters": 15
+    },
+    {
+      "title": "Morôni",
+      "value": "moroni",
+      "chapters": 10
+    }
+  ]
+}
