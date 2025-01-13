@@ -51,6 +51,17 @@
             Gerar Estudo
           </v-btn>
           
+          <v-btn
+              block
+              color="success"
+              size="large"
+              class="text-white mt-2"
+              @click="showDonationDialog = true"
+              prepend-icon="mdi-hand-heart"
+            >
+              Apoiar com PIX
+            </v-btn>
+          
           <p class="text-caption text-center mt-2" v-if="generatingStudy">
             Aguarde, o seu estudo está sendo gerado. Este processo toma aproximadamente 20 segundos
           </p>
@@ -62,6 +73,8 @@
         </v-card>
       </v-col>
     </v-row>
+    
+    <DonationDialog v-model:open="showDonationDialog" />
   </v-container>
 </template>
 
@@ -72,6 +85,7 @@ import { useStudyStore } from '../store/studyStore'
 import bookData from '../data/book-of-mormon.json'
 import { getChapterVerses } from '../services/scriptureService'
 import { generateStudy } from '../services/maritacaService'
+import DonationDialog from '../components/DonationDialog.vue'
 
 const router = useRouter()
 const { setStudy } = useStudyStore()
@@ -85,6 +99,7 @@ const verses = ref<Number[]>([])
 const study = ref('')
 const generatingStudy = ref(false)
 const texts = ref<{text: string}[]>([])
+const showDonationDialog = ref(false)
 
 const books = bookData.books
 

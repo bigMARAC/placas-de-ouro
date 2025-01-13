@@ -23,30 +23,47 @@
             da igreja, acessando www.churchofjesuschrist.org ou clicando <a href="https://www.churchofjesuschrist.org/?lang=por" target="_blank">aqui</a>
           </p>
 
-          <v-btn
-            block
-            color="primary"
-            size="large"
-            class="text-white mt-6"
-            to="/"
-          >
-            Criar Novo Estudo
-          </v-btn>
+          <div class="d-flex flex-column gap-4">
+            <v-btn
+              block
+              color="primary"
+              size="large"
+              class="text-white"
+              to="/"
+            >
+              Criar Novo Estudo
+            </v-btn>
+
+            <v-btn
+              block
+              color="success"
+              size="large"
+              class="text-white mt-2"
+              @click="showDonationDialog = true"
+              prepend-icon="mdi-hand-heart"
+            >
+              Apoiar com PIX
+            </v-btn>
+          </div>
         </v-card>
       </v-col>
     </v-row>
+
+    <DonationDialog v-model:open="showDonationDialog" />
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { onMounted, computed } from 'vue'
+import { onMounted, computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStudyStore } from '../store/studyStore'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
+import DonationDialog from '../components/DonationDialog.vue'
 
 const router = useRouter()
 const { currentStudy } = useStudyStore()
+const showDonationDialog = ref(false)
 
 // Configure marked options
 marked.setOptions({
