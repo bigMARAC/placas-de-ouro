@@ -43,13 +43,35 @@ import { onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStudyStore } from '../store/studyStore'
 import { marked } from 'marked'
+import DOMPurify from 'dompurify'
 
 const router = useRouter()
 const { currentStudy } = useStudyStore()
 
+// Configure marked options
+marked.setOptions({
+  gfm: true, // GitHub Flavored Markdown
+  breaks: true, // Convert \n to <br>
+  headerIds: true, // Add IDs to headers
+  mangle: false, // Don't escape HTML
+  smartLists: true, // Use smarter list behavior
+  smartypants: true // Use smart punctuation
+})
+
 const parsedContent = computed(() => {
   if (!currentStudy.value?.content) return ''
-  return marked(currentStudy.value.content)
+  
+  // Clean and normalize the markdown content
+  let content = currentStudy.value.content
+    .replace(/\r\n/g, '\n') // Normalize line endings
+    .replace(/\n{3,}/g, '\n\n') // Remove excessive line breaks
+    .trim()
+  
+  // Convert markdown to HTML
+  const html = marked(content)
+  
+  // Sanitize HTML to prevent XSS
+  return DOMPurify.sanitize(html)
 })
 
 onMounted(() => {
@@ -64,63 +86,95 @@ onMounted(() => {
   background-color: #faf7f5;
 }
 
-:deep(.markdown-content) {
+.markdown-content {
   line-height: 1.6;
+  color: rgba(0, 0, 0, 0.87);
 }
 
-:deep(.markdown-content h1) {
-  font-size: 1.8em;
+.markdown-content :deep(h1),
+.markdown-content :deep(h2),
+.markdown-content :deep(h3),
+.markdown-content :deep(h4),
+.markdown-content :deep(h5),
+.markdown-content :deep(h6) {
+  margin-top: 1.5em;
+  margin-bottom: 0.75em;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.markdown-content :deep(p) {
   margin-bottom: 1em;
 }
 
-:deep(.markdown-content h2) {
-  font-size: 1.5em;
-  margin: 1em 0;
-}
-
-:deep(.markdown-content h3) {
-  font-size: 1.2em;
-  margin: 1em 0;
-}
-
-:deep(.markdown-content p) {
+.markdown-content :deep(ul),
+.markdown-content :deep(ol) {
   margin-bottom: 1em;
-}
-
-:deep(.markdown-content ul),
-:deep(.markdown-content ol) {
-  margin: 1em 0;
   padding-left: 2em;
 }
 
-:deep(.markdown-content li) {
+.markdown-content :deep(li) {
   margin-bottom: 0.5em;
 }
 
-:deep(.markdown-content blockquote) {
-  border-left: 4px solid #ccc;
+.markdown-content :deep(blockquote) {
   margin: 1em 0;
   padding-left: 1em;
-  color: #666;
+  border-left: 4px solid rgba(0, 0, 0, 0.12);
+  color: rgba(0, 0, 0, 0.6);
 }
 
-:deep(.markdown-content code) {
-  background-color: #f0f0f0;
+.markdown-content :deep(code) {
   padding: 0.2em 0.4em;
+  background-color: rgba(0, 0, 0, 0.05);
   border-radius: 3px;
   font-family: monospace;
 }
 
-:deep(.markdown-content pre) {
-  background-color: #f0f0f0;
+.markdown-content :deep(pre) {
+  margin: 1em 0;
   padding: 1em;
+  background-color: rgba(0, 0, 0, 0.05);
   border-radius: 4px;
   overflow-x: auto;
-  margin: 1em 0;
 }
 
-:deep(.markdown-content pre code) {
-  background-color: transparent;
-  padding: 0;
+.markdown-content :deep(hr) {
+  margin: 2em 0;
+  border: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.markdown-content :deep(table) {
+  width: 100%;
+  margin: 1em 0;
+  border-collapse: collapse;
+}
+
+.markdown-content :deep(th),
+.markdown-content :deep(td) {
+  padding: 0.5em;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.markdown-content :deep(th) {
+  background-color: rgba(0, 0, 0, 0.05);
+  font-weight: 600;
+}
+
+.markdown-content :deep(a) {
+  color: #1976d2;
+  text-decoration: none;
+}
+
+.markdown-content :deep(a:hover) {
+  text-decoration: underline;
+}
+
+.markdown-content :deep(img) {
+  max-width: 100%;
+  height: auto;
+  margin: 1em 0;
+  border-radius: 4px;
 }
 </style>
