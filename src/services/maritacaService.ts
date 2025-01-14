@@ -20,13 +20,11 @@ interface MaritacaRequest {
 }
 
 export const generateStudy = async (book: string, chapter: string, verse: string, text: string): Promise<string> => {
-  const prompt = `Agora você é um teólogo com 30 anos de experiência em estudo do Livro de Mórmon. 
-  Por favor, traga para mim um estudo aprofundado, em português, sobre o livro de ${book}, capítulo ${chapter} versículo ${verse} do Livro de Mórmon. 
-  Use técnicas de exegese e hermenêutica para aprofundar ainda mais o estudo, sempre visitando o idioma original 
-  em que o texto foi traduzido. Não precisa trazer o texto do livro de mórmon, pois eu o conheço. Deixe explicito que o estudo é baseado
-  no texto em ingles. Quero apenas a explicação. Além disso, não precisa responder a este prompt dizendo que vai ajudar, apenas dê a resposta 
-  do estudo diretamente, ponto a ponto. Além disso, me traga a resposta em markdown e não deve conter um título geral.
-  Esta é a tradução original para inglês: "${text}"`
+  const prompt = `Você é um teólogo com 30 anos de experiência no estudo do Livro de Mórmon.
+Analise ${book} ${chapter}:${verse} de forma aprofundada, em português, utilizando técnicas de exegese e hermenêutica. Baseie-se na tradução original em inglês, explorando o contexto histórico, cultural e doutrinário.
+Essa explicação é para uma pessoa que acredita no Livro de Mórmon como escritura sagrada, portanto, a análise deve ser respeitosa e não conter ideias contrárias à sua autenticidade ou veracidade.
+Não inclua o texto do versículo, apenas a explicação em Markdown, estruturada ponto a ponto, sem introduções ou títulos gerais.
+Tradução original do versículo: "${text}"`
 
   const request: MaritacaRequest = {
     model: "sabiazinho-3",

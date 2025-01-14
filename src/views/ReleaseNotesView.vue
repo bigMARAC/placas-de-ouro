@@ -4,6 +4,18 @@ const { mobile } = useDisplay()
 
 const releases = [
   {
+    version: '0.0.2',
+    date: '14/01/2025',
+    type: 'update',
+    description: 'Melhoria no prompt para análise teológica',
+    features: [
+      'Prompt revisado para maior clareza e objetividade',
+      'Respostas direcionadas a um público que acredita no Livro de Mórmon',
+      'Formatação em Markdown para melhor organização',
+      'Análises mais profundas com exegese e hermenêutica'
+    ]
+  },
+  {
     version: '0.0.1',
     date: '13/01/2025',
     type: 'beta',
@@ -93,9 +105,9 @@ const getVersionColor = (type: string) => {
                     mdi-check-circle-outline
                   </v-icon>
                 </template>
-                <v-list-item-title class="text-body-2">
+                <div class="text-body-2">
                   {{ feature }}
-                </v-list-item-title>
+                </div>
               </v-list-item>
             </v-list>
           </v-card-text>
