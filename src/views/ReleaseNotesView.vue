@@ -4,6 +4,18 @@ const { mobile } = useDisplay()
 
 const releases = [
   {
+    version: '0.1.0',
+    date: '16/01/2025',
+    type: 'beta',
+    description: 'Aprimoramento geral do aplicativo',
+    features: [
+      'Agora o aplicativo coleta o e-mail do usuário para uma experiência mais personalizada.',
+      'Usuários podem salvar estudos como favoritos para acessá-los facilmente.',
+      'É possível escolher o tipo de estudo, oferecendo mais controle ao usuário.',
+      'A interface foi redesenhada para ser mais moderna e intuitiva.',
+    ]
+  },
+  {
     version: '0.0.2',
     date: '14/01/2025',
     type: 'update',
@@ -18,7 +30,7 @@ const releases = [
   {
     version: '0.0.1',
     date: '13/01/2025',
-    type: 'beta',
+    type: 'first',
     description: 'Versão beta para testes',
     features: [
       'Interface básica implementada',
