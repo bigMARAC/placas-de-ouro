@@ -3,176 +3,72 @@
     <v-row justify="center">
       <v-col cols="12" md="8">
         <v-card class="pa-6" elevation="2">
-          <h1 class="text-h4 mb-6 text-center">Criar novo estudo</h1>
+          <h1 class="text-h4 mb-6 text-center">Placas de Ouro</h1>
           
-          <v-select
-            v-model="selectedBook"
-            :items="books"
-            label="Livro"
-            variant="outlined"
-            class="mb-4"
-            color="primary"
-            @update:model-value="handleBookChange"
-          ></v-select>
-
-          <v-select
-            v-model="selectedChapter"
-            :items="chapters"
-            label="Capítulo"
-            variant="outlined"
-            class="mb-4"
-            color="primary"
-            :disabled="!selectedBook"
-            :loading="loading"
-            @update:model-value="handleChapterChange"
-          ></v-select>
-
-          <v-select
-            v-model="selectedVerse"
-            :items="verses"
-            label="Versículo"
-            variant="outlined"
-            class="mb-6"
-            color="primary"
-            :disabled="!selectedChapter || loading"
-          ></v-select>
-
-          <div v-if="error" class="text-error mb-4">{{ error }}</div>
-
-          <v-btn
-            block
-            color="primary"
-            size="large"
-            :loading="generatingStudy"
-            :disabled="!selectedVerse || loading || generatingStudy"
-            class="text-white"
-            @click="handleGenerateStudy"
-          >
-            Gerar Estudo
-          </v-btn>
-          
-          <v-btn
-              block
-              color="success"
-              size="large"
-              class="text-white mt-2"
-              @click="showDonationDialog = true"
-              prepend-icon="mdi-hand-heart"
-            >
-              Apoiar com PIX
-            </v-btn>
-          
-          <p class="text-caption text-center mt-2" v-if="generatingStudy">
-            Aguarde, o seu estudo está sendo gerado. Este processo toma aproximadamente 20 segundos
-          </p>
-          
-          <v-card-text v-if="study" class="mt-4">
-            <div class="text-h6 mb-2">Estudo Gerado:</div>
-            <div class="text-body-1" style="white-space: pre-line">{{ study }}</div>
+          <v-card-text class="text-body-1">
+            <p class="mb-4">
+              Bem-vindo ao Placas de Ouro! Este é um assistente de estudos do Livro de Mórmon que utiliza 
+              inteligência artificial para gerar insights profundos e relevantes sobre as escrituras.
+            </p>
+            <p class="mb-4">
+              Com nossa ferramenta, você pode selecionar qualquer versículo do Livro de Mórmon e receber 
+              um estudo detalhado que inclui contexto histórico, princípios doutrinários e aplicações práticas 
+              para sua vida.
+            </p>
           </v-card-text>
+
+          <v-form @submit.prevent="handleSubmit" class="mt-4">
+            <v-text-field
+              v-model="email"
+              label="Seu e-mail"
+              type="email"
+              variant="outlined"
+              :rules="[v => !!v || 'E-mail é obrigatório', v => /.+@.+\..+/.test(v) || 'E-mail deve ser válido']"
+              required
+            ></v-text-field>
+
+            <v-btn
+              block
+              color="primary"
+              size="large"
+              type="submit"
+              :disabled="!isValidEmail"
+              class="text-white mt-4"
+            >
+              Começar a Estudar
+            </v-btn>
+          </v-form>
         </v-card>
       </v-col>
     </v-row>
-    
-    <DonationDialog v-model:open="showDonationDialog" />
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useStudyStore } from '../store/studyStore'
-import bookData from '../data/book-of-mormon.json'
-import { getChapterVerses } from '../services/scriptureService'
-import { generateStudy } from '../services/maritacaService'
-import DonationDialog from '../components/DonationDialog.vue'
+import { useAuthStore } from '../store/authStore'
 
 const router = useRouter()
-const { setStudy } = useStudyStore()
+const authStore = useAuthStore()
+const email = ref('')
 
-const selectedBook = ref('')
-const selectedChapter = ref('')
-const selectedVerse = ref('')
-const loading = ref(false)
-const error = ref('')
-const verses = ref<Number[]>([])
-const study = ref('')
-const generatingStudy = ref(false)
-const texts = ref<{text: string}[]>([])
-const showDonationDialog = ref(false)
-
-const books = bookData.books
-
-const chapters = computed(() => {
-  if (!selectedBook.value) return []
-  const book = bookData.books.find(b => b.value === selectedBook.value)
-  return book ? Array.from({ length: book.chapters }, (_, i) => (i + 1).toString()) : []
+const isValidEmail = computed(() => {
+  return /.+@.+\..+/.test(email.value)
 })
 
-const resetChapter = () => {
-  selectedChapter.value = ''
-  selectedVerse.value = ''
-  verses.value = []
-}
+onMounted(() => {
+  if (authStore.isAuthenticated()) {
+    router.push('/generate')
+  }
+})
 
-const resetVerse = () => {
-  selectedVerse.value = ''
-}
-
-const handleBookChange = () => {
-  resetChapter()
-}
-
-const handleChapterChange = async () => {
-  resetVerse()
-  if (!selectedBook.value || !selectedChapter.value) return
-
-  loading.value = true
-  error.value = ''
-
-  try {
-    const response = await getChapterVerses(selectedBook.value, selectedChapter.value)
-    verses.value = Array.from({ length: response.chapter.verses.length }, (_, i) => i + 1) 
-    texts.value = response.chapter.verses
-  } catch (err) {
-    error.value = 'Erro ao carregar versículos. Por favor, tente novamente.';
-    console.error('Error:', err)
-  } finally {
-    loading.value = false
+const handleSubmit = () => {
+  if (isValidEmail.value) {
+    authStore.setEmail(email.value)
+    router.push('/generate')
   }
 }
-
-const handleGenerateStudy = async () => {
-  if (!selectedBook.value || !selectedChapter.value || !selectedVerse.value) return;
-
-  generatingStudy.value = true;
-  error.value = '';
-
-  try {
-    const content = await generateStudy(
-      selectedBook.value,
-      selectedChapter.value,
-      selectedVerse.value,
-      texts.value[Number(selectedVerse.value) - 1].text
-    );
-    
-    const book = bookData.books.find(b => b.value === selectedBook.value)
-    
-    setStudy({
-      book: book?.title ?? '1 Néfi',
-      chapter: selectedChapter.value,
-      verse: selectedVerse.value.toString(),
-      content
-    });
-
-    router.push('/study');
-  } catch (err) {
-    error.value = 'Erro ao gerar estudo. Por favor, tente novamente.';
-    console.error('Error:', err);
-  } finally {
-    generatingStudy.value = false;
-  }
-};
 </script>
 
 <style scoped>
