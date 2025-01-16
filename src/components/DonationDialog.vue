@@ -17,7 +17,7 @@
 
         <v-text-field
           :model-value="pixKey"
-          label="Chave PIX"
+          label="PIX Copia-e-cola"
           readonly
           class="mb-2"
           append-inner-icon="mdi-content-copy"
@@ -30,7 +30,7 @@
           variant="tonal"
           class="mb-4"
         >
-          Chave PIX copiada com sucesso!
+          Pix Copia-e-cola copiado com sucesso!
         </v-alert>
       </v-card-text>
 
