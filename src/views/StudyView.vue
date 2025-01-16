@@ -40,7 +40,7 @@
           <v-divider class="my-9"></v-divider>
           
           <p class="text-body my-6">
-            Este texto foi gerado por uma inteligência artificial e, portanto, não representa um estudo oficial. 
+            Este texto foi gerado por uma inteligência artificial e, portanto, não representa um texto oficial. 
             Se você tiver dúvidas ou precisar de informações precisas, recomenda-se verificar diretamente na página oficial 
             da igreja, acessando www.churchofjesuschrist.org ou clicando <a href="https://www.churchofjesuschrist.org/?lang=por" target="_blank">aqui</a>
           </p>

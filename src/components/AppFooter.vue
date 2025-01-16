@@ -24,7 +24,7 @@ const openWhatsApp = () => {
           variant="flat"
           class="mb-1 text-primary"
         >
-          v0.0.2
+          v0.2.0
         </v-chip>
 
         <div class="d-flex align-center gap-1">

@@ -113,7 +113,7 @@
             prepend-icon="mdi-creation"
             @click="handleGenerateStudy"
           >
-            GERAR MEU ESTUDO
+            Gerar Estudo
           </v-btn>
           
           <v-btn
@@ -146,16 +146,18 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useStudyStore } from '../store/studyStore'
+import { useAuthStore } from '../store/authStore'
 import { useSavedStudiesStore } from '../store/savedStudiesStore'
+import { useStudyStore } from '../store/studyStore'
+import { generateStudy, type StudyDepth, type StudyRequest, type StudyStyle } from '../services/studyGenerationService'
 import bookData from '../data/book-of-mormon.json'
 import { getChapterVerses } from '../services/scriptureService'
-import { generateStudy, type StudyDepth, type StudyStyle } from '../services/maritacaService'
 import DonationDialog from '../components/DonationDialog.vue'
 
 const router = useRouter()
-const studyStore = useStudyStore()
+const authStore = useAuthStore()
 const savedStudiesStore = useSavedStudiesStore()
+const studyStore = useStudyStore()
 
 const selectedBook = ref('')
 const selectedChapter = ref('')
@@ -169,8 +171,8 @@ const texts = ref<{text: string}[]>([])
 const showDonationDialog = ref(false)
 
 // New study options
-const studyDepth = ref<StudyDepth>('intermediate')
-const studyStyle = ref<StudyStyle>('spiritual')
+const studyDepth = ref('intermediate')
+const studyStyle = ref('spiritual')
 
 const studyDepthOptions = [
   { title: 'Estudo rápido', value: 'basic' },
@@ -238,40 +240,41 @@ const handleChapterChange = async () => {
 }
 
 const handleGenerateStudy = async () => {
-  if (!selectedBook.value || !selectedChapter.value || !selectedVerse.value) return;
+  if (!selectedBook.value || !selectedChapter.value || !selectedVerse.value) return
 
-  generatingStudy.value = true;
-  error.value = '';
+  generatingStudy.value = true
+  error.value = ''
 
   try {
-    const content = await generateStudy(
-      selectedBook.value,
-      selectedChapter.value,
-      selectedVerse.value,
-      texts.value[Number(selectedVerse.value) - 1].text,
-      {
-        depth: studyDepth.value,
-        style: studyStyle.value
-      }
-    );
+    const studyRequest: StudyRequest = {
+      book: selectedBook.value,
+      chapter: selectedChapter.value,
+      verses: selectedVerse.value,
+      studyType: studyStyle.value as StudyStyle,
+      depth: studyDepth.value as StudyDepth,
+      email: authStore.email
+    }
+    
+    const content = await generateStudy(studyRequest)
     
     const book = bookData.books.find(b => b.value === selectedBook.value)
     
     studyStore.setStudy({
-      book: book?.title ?? '1 Néfi',
+      book: book?.title ?? selectedBook.value,
       chapter: selectedChapter.value,
-      verse: selectedVerse.value.toString(),
+      verse: selectedVerse.value,
       content
-    });
+    })
 
-    router.push('/study');
-  } catch (err) {
-    error.value = 'Erro ao gerar estudo. Por favor, tente novamente.';
-    console.error('Error:', err);
+    // Redirect to study view
+    router.push('/study')
+  } catch (err: any) {
+    console.error('Error generating study:', err)
+    error.value = err?.message || 'Ocorreu um erro ao gerar o estudo. Por favor, tente novamente.'
   } finally {
-    generatingStudy.value = false;
+    generatingStudy.value = false
   }
-};
+}
 </script>
 
 <style scoped>
