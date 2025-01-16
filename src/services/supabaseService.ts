@@ -12,19 +12,9 @@ export interface UserAccess {
 }
 
 function getBrazilianDateTime() {
-  // Create a date in Brazilian timezone
-  // const date = new Date()
-  // const brazilianDate = new Date(date.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }))
-  // console.log(brazilianDate.toISOString().replace('T', ' ').replace('Z', ''))
-  
-  var tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
+  var tzoffset = (new Date()).getTimezoneOffset() * 60000;
   var localISOTime = (new Date(Date.now() - tzoffset)).toISOString().slice(0, -1);
-  console.log(localISOTime)
-  console.log(localISOTime.replace('T', ' ').replace('Z', ''))
   return localISOTime.replace('T', ' ').replace('Z', '')
-  
-  // Format in PostgreSQL timestamp format
-  // return brazilianDate.toISOString().replace('T', ' ').replace('Z', '')
 }
 
 export async function upsertUserAccess(email: string) {

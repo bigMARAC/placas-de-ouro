@@ -103,7 +103,6 @@ const viewStudy = (id: string) => {
 }
 
 const confirmDelete = (study: SavedStudy) => {
-  console.log(study)
   studyToDelete.value = study
   showDeleteDialog.value = true
 }
