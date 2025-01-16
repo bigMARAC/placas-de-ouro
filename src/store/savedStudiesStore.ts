@@ -52,7 +52,6 @@ export const useSavedStudiesStore = defineStore('savedStudies', () => {
     return studies.value.find(study => study.id === id)
   }
 
-  // Load studies when store is created
   loadStudies()
 
   return {

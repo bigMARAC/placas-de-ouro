@@ -14,14 +14,10 @@ const props = defineProps<{
 
 const sanitizedHtml = computed(() => {
   try {
-    // Handle null or undefined content
     const markdownContent = props.content || ''
-    
-    // Parse markdown synchronously
     const html = marked.parse(markdownContent, { async: false }) as string
     
     if (props.preview) {
-      // For preview, extract first paragraph and limit length
       const paragraphs = html.split('</p>')
       if (paragraphs.length === 0) return ''
       
@@ -32,7 +28,6 @@ const sanitizedHtml = computed(() => {
       return DOMPurify.sanitize(firstParagraph)
     }
     
-    // Sanitize HTML synchronously
     return DOMPurify.sanitize(html)
   } catch (error) {
     console.error('Error processing markdown:', error)
@@ -47,7 +42,7 @@ const sanitizedHtml = computed(() => {
 }
 
 .markdown-content :deep(h1) {
-  font-size: 2em;
+  font-size: 1.8em;
   margin-bottom: 0.5em;
 }
 
@@ -88,7 +83,6 @@ const sanitizedHtml = computed(() => {
 
 .markdown-content :deep(blockquote) {
   border-left: 4px solid rgba(0, 0, 0, 0.1);
-  margin-left: 0;
   padding-left: 1em;
   color: rgba(0, 0, 0, 0.7);
 }
@@ -100,11 +94,6 @@ const sanitizedHtml = computed(() => {
 
 .markdown-content :deep(a:hover) {
   text-decoration: underline;
-}
-
-.markdown-content :deep(img) {
-  max-width: 100%;
-  height: auto;
 }
 
 @media (max-width: 600px) {

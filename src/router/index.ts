@@ -1,14 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import StudyView from '../views/StudyView.vue'
-import ReleaseNotesView from '../views/ReleaseNotesView.vue'
-import GenerateView from '../views/GenerateView.vue'
-import SavedStudiesView from '../views/SavedStudiesView.vue'
-import SavedStudyView from '../views/SavedStudyView.vue'
 import { useAuthStore } from '../store/authStore'
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
@@ -18,39 +13,39 @@ const router = createRouter({
     {
       path: '/generate',
       name: 'generate',
-      component: GenerateView,
+      component: () => import('../views/GenerateView.vue'),
       meta: { requiresAuth: true }
     },
     {
       path: '/study',
       name: 'study',
-      component: StudyView,
+      component: () => import('../views/StudyView.vue'),
       meta: { requiresAuth: true }
     },
     {
       path: '/saved-studies',
       name: 'saved-studies',
-      component: SavedStudiesView,
+      component: () => import('../views/SavedStudiesView.vue'),
       meta: { requiresAuth: true }
     },
     {
       path: '/saved-study/:id',
       name: 'saved-study',
-      component: SavedStudyView,
+      component: () => import('../views/SavedStudyView.vue'),
       meta: { requiresAuth: true }
     },
     {
       path: '/release-notes',
       name: 'release-notes',
-      component: ReleaseNotesView
+      component: () => import('../views/ReleaseNotesView.vue')
     }
   ]
 })
 
-// Navigation guard
+// Navigation guard to protect authenticated routes
 router.beforeEach((to) => {
   const authStore = useAuthStore()
-  const publicPages = ['/']
+  const publicPages = ['/', '/release-notes']
 
   if (!publicPages.includes(to.path) && !authStore.isAuthenticated()) {
     return '/'
