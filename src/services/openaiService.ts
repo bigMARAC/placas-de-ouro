@@ -9,8 +9,7 @@ interface Message {
   }[]
 }
 
-interface Thread {
-  id: string
+interface MessagesResponse {
   data: Message[]
 }
 
@@ -95,7 +94,7 @@ export async function checkRunStatus(threadId: string, runId: string): Promise<s
 
 export async function getMessages(threadId: string): Promise<Message[]> {
   try {
-    const response = await axios.get(
+    const response = await axios.get<MessagesResponse>(
       `https://api.openai.com/v1/threads/${threadId}/messages`,
       {
         headers: {
