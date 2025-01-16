@@ -8,50 +8,52 @@ import { marked } from 'marked'
 import DOMPurify from 'dompurify'
 
 const props = defineProps<{
-  content: string
+  content?: string
   preview?: boolean
 }>()
 
 const sanitizedHtml = computed(() => {
-  // Parse markdown synchronously
-  var html = marked.parse(props.content, { async: false }) as string
-  
-  if (props.preview) {
-    // For preview, extract first paragraph and limit length
-    const div = document.createElement('div')
-    div.innerHTML = html
-    const firstParagraph = div.querySelector('p')
-    if (firstParagraph) {
-      let text = firstParagraph.textContent || ''
-      if (text.length > 150) {
-        text = text.substring(0, 150) + '...'
+  try {
+    // Handle null or undefined content
+    const markdownContent = props.content || ''
+    
+    // Parse markdown synchronously
+    const html = marked.parse(markdownContent, { async: false }) as string
+    
+    if (props.preview) {
+      // For preview, extract first paragraph and limit length
+      const paragraphs = html.split('</p>')
+      if (paragraphs.length === 0) return ''
+      
+      const firstParagraph = paragraphs[0] + '</p>'
+      if (firstParagraph.length > 300) {
+        return DOMPurify.sanitize(firstParagraph.substring(0, 300) + '...')
       }
-      html = `<p>${text}</p>`
+      return DOMPurify.sanitize(firstParagraph)
     }
+    
+    // Sanitize HTML synchronously
+    return DOMPurify.sanitize(html)
+  } catch (error) {
+    console.error('Error processing markdown:', error)
+    return ''
   }
-  
-  // Sanitize HTML synchronously
-  return DOMPurify.sanitize(html)
 })
 </script>
 
 <style scoped>
+.markdown-content {
+  width: 100%;
+}
+
 .markdown-content :deep(h1) {
-  font-size: 1.8em;
-  margin-bottom: 0.8em;
-  font-weight: 600;
+  font-size: 2em;
+  margin-bottom: 0.5em;
 }
 
 .markdown-content :deep(h2) {
   font-size: 1.5em;
-  margin-bottom: 0.6em;
-  font-weight: 600;
-}
-
-.markdown-content :deep(h3) {
-  font-size: 1.3em;
   margin-bottom: 0.5em;
-  font-weight: 600;
 }
 
 .markdown-content :deep(p) {
@@ -59,36 +61,36 @@ const sanitizedHtml = computed(() => {
   line-height: 1.6;
 }
 
-.markdown-content :deep(ul), .markdown-content :deep(ol) {
+.markdown-content :deep(ul),
+.markdown-content :deep(ol) {
   margin-bottom: 1em;
   padding-left: 2em;
 }
 
 .markdown-content :deep(li) {
   margin-bottom: 0.5em;
-  line-height: 1.6;
-}
-
-.markdown-content :deep(blockquote) {
-  border-left: 4px solid #ccc;
-  margin: 1em 0;
-  padding-left: 1em;
-  color: #666;
 }
 
 .markdown-content :deep(code) {
-  background-color: #f5f5f5;
+  background-color: rgba(0, 0, 0, 0.05);
   padding: 0.2em 0.4em;
   border-radius: 3px;
   font-family: monospace;
 }
 
 .markdown-content :deep(pre) {
-  background-color: #f5f5f5;
+  background-color: rgba(0, 0, 0, 0.05);
   padding: 1em;
-  border-radius: 4px;
+  border-radius: 5px;
   overflow-x: auto;
   margin-bottom: 1em;
+}
+
+.markdown-content :deep(blockquote) {
+  border-left: 4px solid rgba(0, 0, 0, 0.1);
+  margin-left: 0;
+  padding-left: 1em;
+  color: rgba(0, 0, 0, 0.7);
 }
 
 .markdown-content :deep(a) {
@@ -100,21 +102,18 @@ const sanitizedHtml = computed(() => {
   text-decoration: underline;
 }
 
+.markdown-content :deep(img) {
+  max-width: 100%;
+  height: auto;
+}
+
 @media (max-width: 600px) {
   .markdown-content :deep(h1) {
-    font-size: 1.6em;
+    font-size: 1.5em;
   }
 
   .markdown-content :deep(h2) {
-    font-size: 1.4em;
-  }
-
-  .markdown-content :deep(h3) {
-    font-size: 1.2em;
-  }
-
-  .markdown-content :deep(p), .markdown-content :deep(li) {
-    font-size: 0.95em;
+    font-size: 1.25em;
   }
 }
 </style>

@@ -112,13 +112,21 @@
           </v-btn>
           <v-btn
             color="primary"
-            @click="saveCurrentStudy"
+            @click="handleSaveStudy"
           >
             Salvar
           </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <v-snackbar
+      v-model="showError"
+      color="error"
+      timeout="3000"
+    >
+      {{ errorMessage }}
+    </v-snackbar>
 
     <DonationDialog v-model:open="showDonationDialog"/>
   </v-container>
@@ -133,26 +141,55 @@ import DonationDialog from '../components/DonationDialog.vue'
 import MarkdownContent from '../components/MarkdownContent.vue'
 
 const router = useRouter()
-const { currentStudy } = useStudyStore()
+const studyStore = useStudyStore()
 const savedStudiesStore = useSavedStudiesStore()
 
+const currentStudy = studyStore.currentStudy
 const savedId = ref('')
 const showSaveDialog = ref(false)
-const showDonationDialog = ref(false)
 const studyName = ref('')
+const showError = ref(false)
+const errorMessage = ref('')
+const showDonationDialog = ref(false)
 
-const saveCurrentStudy = () => {
-  if (!currentStudy.value || savedId.value) return
-  
-  savedId.value = savedStudiesStore.saveStudy({
-    name: studyName.value || '',
-    book: currentStudy.value.book,
-    chapter: currentStudy.value.chapter,
-    verse: currentStudy.value.verse,
-    content: currentStudy.value.content
-  })
-  
-  showSaveDialog.value = false
+const handleSaveStudy = async () => {
+  const study = currentStudy.value
+  if (!study) {
+    errorMessage.value = 'Nenhum estudo para salvar.'
+    showError.value = true
+    return
+  }
+
+  try {
+    // Check if study already exists by searching in the store
+    const isDuplicate = savedStudiesStore.studies.some(savedStudy => 
+      savedStudy.content === study.content
+    )
+
+    if (isDuplicate) {
+      errorMessage.value = 'Este estudo já foi salvo anteriormente.'
+      showError.value = true
+      showSaveDialog.value = false
+      return
+    }
+
+    savedId.value = savedStudiesStore.saveStudy({
+      name: studyName.value,
+      book: study.book,
+      chapter: study.chapter,
+      verse: study.verse,
+      content: study.content
+    })
+    showSaveDialog.value = false
+    studyName.value = ''
+  } catch (error) {
+    if (error instanceof Error) {
+      errorMessage.value = error.message
+    } else {
+      errorMessage.value = 'Erro ao salvar o estudo.'
+    }
+    showError.value = true
+  }
 }
 </script>
 

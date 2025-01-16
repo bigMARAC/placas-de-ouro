@@ -61,6 +61,7 @@ export const useSavedStudiesStore = defineStore('savedStudies', () => {
     hasStudies,
     saveStudy,
     deleteStudy,
-    getStudyById
+    getStudyById,
+    email: computed(() => authStore.email)
   }
 })
