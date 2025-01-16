@@ -1,74 +1,127 @@
-# Content of current HomeView.vue copied here
 <template>
   <v-container class="fill-height">
     <v-row justify="center">
       <v-col cols="12" md="8">
-        <v-card class="pa-6" elevation="2">
-          <h1 class="text-h4 mb-6 text-center">Criar novo estudo</h1>
+        <v-card class="pa-8" elevation="2">
+          <h1 class="text-h4 mb-8 text-center primary--text">Criar Estudo</h1>
           
-          <v-select
-            v-model="selectedBook"
-            :items="books"
-            label="Livro"
-            variant="outlined"
-            class="mb-4"
-            color="primary"
-            @update:model-value="handleBookChange"
-          ></v-select>
+          <div class="text-body-1 mb-6">
+            Selecione a escritura que você deseja estudar:
+          </div>
 
-          <v-select
-            v-model="selectedChapter"
-            :items="chapters"
-            label="Capítulo"
-            variant="outlined"
-            class="mb-4"
-            color="primary"
-            :disabled="!selectedBook"
-            :loading="loading"
-            @update:model-value="handleChapterChange"
-          ></v-select>
+          <div class="mb-8">
+            <label class="text-subtitle-1 mb-2 d-block">1. Escolha o Livro:</label>
+            <v-select
+              v-model="selectedBook"
+              :items="books"
+              variant="outlined"
+              class="mb-4"
+              color="primary"
+              :class="{'large-select': true}"
+              @update:model-value="handleBookChange"
+              hide-details
+            ></v-select>
+          </div>
 
-          <v-select
-            v-model="selectedVerse"
-            :items="verses"
-            label="Versículo"
-            variant="outlined"
-            class="mb-6"
-            color="primary"
-            :disabled="!selectedChapter || loading"
-          ></v-select>
+          <div class="mb-8">
+            <label class="text-subtitle-1 mb-2 d-block">2. Escolha o Capítulo:</label>
+            <v-select
+              v-model="selectedChapter"
+              :items="chapters"
+              variant="outlined"
+              class="mb-4"
+              color="primary"
+              :disabled="!selectedBook"
+              :loading="loading"
+              :class="{'large-select': true}"
+              @update:model-value="handleChapterChange"
+              hide-details
+            ></v-select>
+          </div>
 
-          <div v-if="error" class="text-error mb-4">{{ error }}</div>
+          <div class="mb-8">
+            <label class="text-subtitle-1 mb-2 d-block">3. Escolha o Versículo:</label>
+            <v-select
+              v-model="selectedVerse"
+              :items="verses"
+              variant="outlined"
+              color="primary"
+              :disabled="!selectedChapter || loading"
+              :class="{'large-select': true}"
+              hide-details
+            ></v-select>
+          </div>
+
+          <v-divider class="mb-8"></v-divider>
+
+          <div class="text-body-1 mb-6">
+            Personalize seu estudo:
+          </div>
+
+          <div class="mb-8">
+            <label class="text-subtitle-1 mb-2 d-block">4. Qual é o seu tempo disponível para estudar?</label>
+            <v-select
+              v-model="studyDepth"
+              :items="studyDepthOptions"
+              variant="outlined"
+              color="primary"
+              :class="{'large-select': true}"
+              hide-details
+            >
+              <template v-slot:prepend>
+                <v-icon color="primary" class="mr-2">mdi-clock-outline</v-icon>
+              </template>
+            </v-select>
+          </div>
+
+          <div class="mb-8">
+            <label class="text-subtitle-1 mb-2 d-block">5. Que tipo de estudo você prefere?</label>
+            <v-select
+              v-model="studyStyle"
+              :items="studyStyleOptions"
+              variant="outlined"
+              color="primary"
+              :class="{'large-select': true}"
+              hide-details
+            >
+              <template v-slot:prepend>
+                <v-icon color="primary" class="mr-2">mdi-book-open-variant</v-icon>
+              </template>
+            </v-select>
+          </div>
+
+          <div v-if="error" class="text-error mb-4 text-body-1">{{ error }}</div>
 
           <v-btn
             block
             color="primary"
-            size="large"
+            size="x-large"
             :loading="generatingStudy"
             :disabled="!selectedVerse || loading || generatingStudy"
-            class="text-white"
+            class="text-white text-h6 py-6"
+            prepend-icon="mdi-creation"
             @click="handleGenerateStudy"
           >
-            Gerar Estudo
+            Gerar Meu Estudo
           </v-btn>
           
           <v-btn
-              block
-              color="success"
-              size="large"
-              class="text-white mt-2"
-              @click="showDonationDialog = true"
-              prepend-icon="mdi-hand-heart"
-            >
-              Apoiar com PIX
-            </v-btn>
+            block
+            color="success"
+            size="x-large"
+            class="text-white mt-4 text-h6 py-6"
+            @click="showDonationDialog = true"
+            prepend-icon="mdi-hand-heart"
+          >
+            Apoiar com PIX
+          </v-btn>
           
-          <p class="text-caption text-center mt-2" v-if="generatingStudy">
-            Aguarde, o seu estudo está sendo gerado. Este processo toma aproximadamente 20 segundos
+          <p class="text-body-1 text-center mt-4" v-if="generatingStudy">
+            Aguarde, o seu estudo está sendo gerado. Este processo toma aproximadamente 20 segundos.
           </p>
           
-          <v-card-text v-if="study" class="mt-4">
-            <div class="text-h6 mb-2">Estudo Gerado:</div>
+          <v-card-text v-if="study" class="mt-6">
+            <div class="text-h6 mb-4">Estudo Gerado:</div>
             <div class="text-body-1" style="white-space: pre-line">{{ study }}</div>
           </v-card-text>
         </v-card>
@@ -85,7 +138,7 @@ import { useRouter } from 'vue-router'
 import { useStudyStore } from '../store/studyStore'
 import bookData from '../data/book-of-mormon.json'
 import { getChapterVerses } from '../services/scriptureService'
-import { generateStudy } from '../services/maritacaService'
+import { generateStudy, type StudyDepth, type StudyStyle } from '../services/maritacaService'
 import DonationDialog from '../components/DonationDialog.vue'
 
 const router = useRouter()
@@ -101,6 +154,34 @@ const study = ref('')
 const generatingStudy = ref(false)
 const texts = ref<{text: string}[]>([])
 const showDonationDialog = ref(false)
+
+// New study options
+const studyDepth = ref<StudyDepth>('intermediate')
+const studyStyle = ref<StudyStyle>('spiritual')
+
+const studyDepthOptions = [
+  { title: 'Estudo rápido', value: 'basic' },
+  { title: 'Estudo intermediário', value: 'intermediate' },
+  { title: 'Estudo detalhado', value: 'advanced' }
+]
+
+const studyStyleOptions = [
+  { 
+    title: 'Contexto Histórico',
+    value: 'historical',
+    description: 'Entenda o contexto da época e os costumes'
+  },
+  { 
+    title: 'Reflexão Espiritual',
+    value: 'spiritual',
+    description: 'Aplique os ensinamentos em sua vida'
+  },
+  { 
+    title: 'Análise do Texto',
+    value: 'literary',
+    description: 'Explore o significado das palavras e símbolos'
+  }
+]
 
 const books = bookData.books
 
@@ -154,7 +235,11 @@ const handleGenerateStudy = async () => {
       selectedBook.value,
       selectedChapter.value,
       selectedVerse.value,
-      texts.value[Number(selectedVerse.value) - 1].text
+      texts.value[Number(selectedVerse.value) - 1].text,
+      {
+        depth: studyDepth.value,
+        style: studyStyle.value
+      }
     );
     
     const book = bookData.books.find(b => b.value === selectedBook.value)
@@ -179,5 +264,27 @@ const handleGenerateStudy = async () => {
 <style scoped>
 .v-card {
   background-color: #faf7f5;
+}
+
+.large-select :deep(.v-field__input) {
+  font-size: 1.1rem !important;
+  padding: 8px 16px !important;
+}
+
+.large-select :deep(.v-select__selection) {
+  font-size: 1.1rem !important;
+}
+
+.v-btn {
+  letter-spacing: 0.5px;
+}
+
+:deep(.v-field__input) {
+  min-height: 52px !important;
+}
+
+.text-subtitle-1 {
+  color: rgba(0, 0, 0, 0.87);
+  font-weight: 500;
 }
 </style>

@@ -2,42 +2,62 @@
   <v-container class="fill-height">
     <v-row justify="center">
       <v-col cols="12" md="8">
-        <v-card class="pa-6" elevation="2">
-          <h1 class="text-h4 mb-6 text-center">Placas de Ouro</h1>
+        <v-card class="pa-8" elevation="2">
+          <h1 class="text-h4 mb-6 text-center primary--text">Placas de Ouro</h1>
           
-          <v-card-text class="text-body-1">
-            <p class="mb-4">
-              Bem-vindo ao Placas de Ouro! Este é um assistente de estudos do Livro de Mórmon que utiliza 
-              inteligência artificial para gerar insights profundos e relevantes sobre as escrituras.
+          <v-card-text class="text-body-1 pa-0">
+            <p class="text-h6 mb-6">
+              Bem-vindo ao seu assistente de estudos do Livro de Mórmon!
             </p>
-            <p class="mb-4">
-              Com nossa ferramenta, você pode selecionar qualquer versículo do Livro de Mórmon e receber 
-              um estudo detalhado que inclui contexto histórico, princípios doutrinários e aplicações práticas 
-              para sua vida.
+            
+            <div class="feature-list mb-8">
+              <div class="d-flex align-start mb-4">
+                <v-icon color="primary" size="32" class="mr-4 mt-1">mdi-book-open-page-variant</v-icon>
+                <span class="text-body-1">Estude qualquer versículo do Livro de Mórmon com ajuda da inteligência artificial</span>
+              </div>
+              
+              <div class="d-flex align-start mb-4">
+                <v-icon color="primary" size="32" class="mr-4 mt-1">mdi-clock-outline</v-icon>
+                <span class="text-body-1">Escolha quanto tempo você tem disponível para estudar</span>
+              </div>
+              
+              <div class="d-flex align-start mb-4">
+                <v-icon color="primary" size="32" class="mr-4 mt-1">mdi-format-list-checks</v-icon>
+                <span class="text-body-1">Receba explicações claras e insights profundos sobre as escrituras</span>
+              </div>
+            </div>
+
+            <v-divider class="mb-8"></v-divider>
+
+            <p class="text-h6 mb-4">
+              Para começar, digite seu e-mail:
             </p>
+
+            <v-form @submit.prevent="handleSubmit">
+              <v-text-field
+                v-model="email"
+                label="Seu e-mail"
+                type="email"
+                variant="outlined"
+                :rules="[v => !!v || 'E-mail é obrigatório', v => /.+@.+\..+/.test(v) || 'E-mail deve ser válido']"
+                required
+                class="large-input mb-6"
+                hide-details="auto"
+              ></v-text-field>
+
+              <v-btn
+                block
+                color="primary"
+                size="x-large"
+                type="submit"
+                :disabled="!isValidEmail"
+                class="text-white text-h6 py-6"
+                prepend-icon="mdi-book-open-variant"
+              >
+                Começar a Estudar
+              </v-btn>
+            </v-form>
           </v-card-text>
-
-          <v-form @submit.prevent="handleSubmit" class="mt-4">
-            <v-text-field
-              v-model="email"
-              label="Seu e-mail"
-              type="email"
-              variant="outlined"
-              :rules="[v => !!v || 'E-mail é obrigatório', v => /.+@.+\..+/.test(v) || 'E-mail deve ser válido']"
-              required
-            ></v-text-field>
-
-            <v-btn
-              block
-              color="primary"
-              size="large"
-              type="submit"
-              :disabled="!isValidEmail"
-              class="text-white mt-4"
-            >
-              Começar a Estudar
-            </v-btn>
-          </v-form>
         </v-card>
       </v-col>
     </v-row>
@@ -74,5 +94,31 @@ const handleSubmit = () => {
 <style scoped>
 .v-card {
   background-color: #faf7f5;
+}
+
+.large-input :deep(.v-field__input) {
+  font-size: 1.1rem !important;
+  min-height: 52px !important;
+  padding: 8px 16px !important;
+}
+
+.feature-list {
+  font-size: 1.1rem;
+}
+
+@media (max-width: 600px) {
+  .large-input :deep(.v-field__input) {
+    font-size: 1rem !important;
+    min-height: 48px !important;
+    padding: 6px 12px !important;
+  }
+
+  .feature-list {
+    font-size: 1rem;
+  }
+
+  .v-card {
+    padding: 16px !important;
+  }
 }
 </style>
