@@ -3,9 +3,22 @@
     <v-row justify="center">
       <v-col cols="12" md="8">
         <v-card class="pa-8" elevation="2">
-          <h1 class="text-h4 mb-8 text-center primary--text">Criar Estudo</h1>
+          <div class="d-flex flex-column align-center">
+            <h1 class="text-h4 text-sm-h4">Gerar Estudo</h1>
+          </div>
+          <div v-if="savedStudiesStore.hasStudies" class="d-flex mb-8 mt-4">
+            <v-btn
+              color="primary"
+              variant="outlined"
+              prepend-icon="mdi-bookmark"
+              class="w-100"
+              @click="router.push('/saved-studies')"
+            >
+              Meus Estudos
+            </v-btn>
+          </div>
           
-          <div class="text-body-1 mb-6">
+          <div class="text-body-1 mb-6 mt-3">
             Selecione a escritura que você deseja estudar:
           </div>
 
@@ -95,25 +108,23 @@
           <v-btn
             block
             color="primary"
-            size="x-large"
             :loading="generatingStudy"
             :disabled="!selectedVerse || loading || generatingStudy"
-            class="text-white text-h6 py-6"
             prepend-icon="mdi-creation"
             @click="handleGenerateStudy"
           >
-            Gerar Meu Estudo
+            GERAR MEU ESTUDO
           </v-btn>
           
           <v-btn
             block
-            color="success"
-            size="x-large"
-            class="text-white mt-4 text-h6 py-6"
+            color="primary"
+            class="mt-4"
+            variant="outlined"
             @click="showDonationDialog = true"
             prepend-icon="mdi-hand-heart"
           >
-            Apoiar com PIX
+            APOIAR O PROJETO
           </v-btn>
           
           <p class="text-body-1 text-center mt-4" v-if="generatingStudy">
@@ -136,13 +147,15 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStudyStore } from '../store/studyStore'
+import { useSavedStudiesStore } from '../store/savedStudiesStore'
 import bookData from '../data/book-of-mormon.json'
 import { getChapterVerses } from '../services/scriptureService'
 import { generateStudy, type StudyDepth, type StudyStyle } from '../services/maritacaService'
 import DonationDialog from '../components/DonationDialog.vue'
 
 const router = useRouter()
-const { setStudy } = useStudyStore()
+const studyStore = useStudyStore()
+const savedStudiesStore = useSavedStudiesStore()
 
 const selectedBook = ref('')
 const selectedChapter = ref('')
@@ -244,7 +257,7 @@ const handleGenerateStudy = async () => {
     
     const book = bookData.books.find(b => b.value === selectedBook.value)
     
-    setStudy({
+    studyStore.setStudy({
       book: book?.title ?? '1 Néfi',
       chapter: selectedChapter.value,
       verse: selectedVerse.value.toString(),
@@ -286,5 +299,9 @@ const handleGenerateStudy = async () => {
 .text-subtitle-1 {
   color: rgba(0, 0, 0, 0.87);
   font-weight: 500;
+}
+
+.w-100 {
+  width: 100%;
 }
 </style>

@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { updateLastAccess } from './supabaseService';
+import { useAuthStore } from '../store/authStore';
 
 const API_URL = '/api/maritaca';
 const API_KEY = import.meta.env.VITE_MARITACA_API_KEY;
@@ -56,6 +58,8 @@ export const generateStudy = async (
   text: string,
   options: StudyOptions
 ): Promise<string> => {
+  const authStore = useAuthStore();
+  
   const depthDesc = getDepthDescription(options.depth)
   const stylePrompt = getStylePrompt(options.style)
 
@@ -89,6 +93,15 @@ Tradução original do versículo: "${text}"`
         }
       }
     );
+
+    // Update last access in Supabase after successful study generation
+    if (authStore.email) {
+      try {
+        await updateLastAccess(authStore.email)
+      } catch (error) {
+        console.error('Failed to update last access:', error)
+      }
+    }
 
     return response.data.choices[0].message.content;
   } catch (error) {
