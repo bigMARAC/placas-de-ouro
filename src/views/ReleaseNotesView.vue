@@ -76,17 +76,11 @@ import releaseData from '../data/releases.json'
 
 const { mobile } = useDisplay()
 
-interface Release {
-  version: string
-  date: string
-  type: 'major' | 'beta' | 'update' | 'first' | 'coming-soon'
-  description: string
-  features: string[]
-}
+type ReleaseType = 'major' | 'beta' | 'update' | 'first' | 'coming-soon'
 
-const releases = releaseData.releases as Release[]
+const releases = releaseData.releases
 
-const getVersionColor = (type: string): string => {
+const getVersionColor = (type: ReleaseType): string => {
   switch (type) {
     case 'major':
       return 'success'
@@ -99,7 +93,7 @@ const getVersionColor = (type: string): string => {
   }
 }
 
-const getVersionIcon = (type: string): string | undefined => {
+const getVersionIcon = (type: ReleaseType): string | undefined => {
   switch (type) {
     case 'coming-soon':
       return 'mdi-clock-outline'
