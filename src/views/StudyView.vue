@@ -49,6 +49,16 @@
             block
             color="primary"
             class="mt-4"
+            to="/generate"
+            prepend-icon="mdi-creation"
+          >
+            GERAR NOVO ESTUDO
+          </v-btn>
+          
+          <v-btn
+            block
+            color="primary"
+            class="mt-4"
             variant="outlined"
             @click="showDonationDialog = true"
             prepend-icon="mdi-hand-heart"
