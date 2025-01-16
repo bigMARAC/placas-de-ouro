@@ -47,13 +47,13 @@ const router = createRouter({
   ]
 })
 
-router.beforeEach((to, from, next) => {
+// Navigation guard
+router.beforeEach((to) => {
   const authStore = useAuthStore()
-  
-  if (to.meta.requiresAuth && !authStore.isAuthenticated()) {
-    next('/')
-  } else {
-    next()
+  const publicPages = ['/']
+
+  if (!publicPages.includes(to.path) && !authStore.isAuthenticated()) {
+    return '/'
   }
 })
 

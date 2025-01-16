@@ -13,7 +13,9 @@ const props = defineProps<{
 }>()
 
 const sanitizedHtml = computed(() => {
-  let html = marked.parse(props.content)
+  // Parse markdown synchronously
+  var html = marked.parse(props.content, { async: false }) as string
+  
   if (props.preview) {
     // For preview, extract first paragraph and limit length
     const div = document.createElement('div')
@@ -27,6 +29,8 @@ const sanitizedHtml = computed(() => {
       html = `<p>${text}</p>`
     }
   }
+  
+  // Sanitize HTML synchronously
   return DOMPurify.sanitize(html)
 })
 </script>
