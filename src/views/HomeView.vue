@@ -2,181 +2,123 @@
   <v-container class="fill-height">
     <v-row justify="center">
       <v-col cols="12" md="8">
-        <v-card class="pa-6" elevation="2">
-          <h1 class="text-h4 mb-6 text-center">Criar novo estudo</h1>
+        <v-card class="pa-8" elevation="2">
+          <h1 class="text-h4 mb-6 text-center primary--text">Placas de Ouro</h1>
           
-          <v-select
-            v-model="selectedBook"
-            :items="books"
-            label="Livro"
-            variant="outlined"
-            class="mb-4"
-            color="primary"
-            @update:model-value="handleBookChange"
-          ></v-select>
+          <v-card-text class="text-body-1 pa-0">
+            <p class="text-h6 mb-6">
+              Bem-vindo ao seu assistente de estudos do Livro de Mórmon!
+            </p>
+            
+            <div class="feature-list mb-8">
+              <div class="d-flex align-start mb-4">
+                <v-icon color="primary" size="32" class="mr-4 mt-1">mdi-book-open-page-variant</v-icon>
+                <span class="text-body-1">Estude qualquer versículo do Livro de Mórmon com ajuda da inteligência artificial</span>
+              </div>
+              
+              <div class="d-flex align-start mb-4">
+                <v-icon color="primary" size="32" class="mr-4 mt-1">mdi-clock-outline</v-icon>
+                <span class="text-body-1">Escolha quanto tempo você tem disponível para estudar</span>
+              </div>
+              
+              <div class="d-flex align-start mb-4">
+                <v-icon color="primary" size="32" class="mr-4 mt-1">mdi-format-list-checks</v-icon>
+                <span class="text-body-1">Receba explicações claras e insights profundos sobre as escrituras</span>
+              </div>
+            </div>
 
-          <v-select
-            v-model="selectedChapter"
-            :items="chapters"
-            label="Capítulo"
-            variant="outlined"
-            class="mb-4"
-            color="primary"
-            :disabled="!selectedBook"
-            :loading="loading"
-            @update:model-value="handleChapterChange"
-          ></v-select>
+            <v-divider class="mb-8"></v-divider>
 
-          <v-select
-            v-model="selectedVerse"
-            :items="verses"
-            label="Versículo"
-            variant="outlined"
-            class="mb-6"
-            color="primary"
-            :disabled="!selectedChapter || loading"
-          ></v-select>
+            <p class="text-h6 mb-4">
+              Para começar, digite seu e-mail:
+            </p>
 
-          <div v-if="error" class="text-error mb-4">{{ error }}</div>
+            <v-form @submit.prevent="handleSubmit">
+              <v-text-field
+                v-model="email"
+                label="Seu e-mail"
+                type="email"
+                variant="outlined"
+                :rules="[v => !!v || 'E-mail é obrigatório', v => /.+@.+\..+/.test(v) || 'E-mail deve ser válido']"
+                required
+                class="large-input mb-6"
+                hide-details="auto"
+              ></v-text-field>
 
-          <v-btn
-            block
-            color="primary"
-            size="large"
-            :loading="generatingStudy"
-            :disabled="!selectedVerse || loading || generatingStudy"
-            class="text-white"
-            @click="handleGenerateStudy"
-          >
-            Gerar Estudo
-          </v-btn>
-          
-          <v-btn
-              block
-              color="success"
-              size="large"
-              class="text-white mt-2"
-              @click="showDonationDialog = true"
-              prepend-icon="mdi-hand-heart"
-            >
-              Apoiar com PIX
-            </v-btn>
-          
-          <p class="text-caption text-center mt-2" v-if="generatingStudy">
-            Aguarde, o seu estudo está sendo gerado. Este processo toma aproximadamente 20 segundos
-          </p>
-          
-          <v-card-text v-if="study" class="mt-4">
-            <div class="text-h6 mb-2">Estudo Gerado:</div>
-            <div class="text-body-1" style="white-space: pre-line">{{ study }}</div>
+              <v-btn
+                block
+                color="primary"
+                size="x-large"
+                type="submit"
+                :disabled="!isValidEmail"
+                class="text-white text-h6 py-6"
+                prepend-icon="mdi-book-open-variant"
+              >
+                Começar a Estudar
+              </v-btn>
+            </v-form>
           </v-card-text>
         </v-card>
       </v-col>
     </v-row>
-    
-    <DonationDialog v-model:open="showDonationDialog" />
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useStudyStore } from '../store/studyStore'
-import bookData from '../data/book-of-mormon.json'
-import { getChapterVerses } from '../services/scriptureService'
-import { generateStudy } from '../services/maritacaService'
-import DonationDialog from '../components/DonationDialog.vue'
+import { useAuthStore } from '../store/authStore'
 
 const router = useRouter()
-const { setStudy } = useStudyStore()
+const authStore = useAuthStore()
+const email = ref('')
 
-const selectedBook = ref('')
-const selectedChapter = ref('')
-const selectedVerse = ref('')
-const loading = ref(false)
-const error = ref('')
-const verses = ref<Number[]>([])
-const study = ref('')
-const generatingStudy = ref(false)
-const texts = ref<{text: string}[]>([])
-const showDonationDialog = ref(false)
-
-const books = bookData.books
-
-const chapters = computed(() => {
-  if (!selectedBook.value) return []
-  const book = bookData.books.find(b => b.value === selectedBook.value)
-  return book ? Array.from({ length: book.chapters }, (_, i) => (i + 1).toString()) : []
+const isValidEmail = computed(() => {
+  return /.+@.+\..+/.test(email.value)
 })
 
-const resetChapter = () => {
-  selectedChapter.value = ''
-  selectedVerse.value = ''
-  verses.value = []
-}
+onMounted(() => {
+  if (authStore.isAuthenticated()) {
+    router.push('/generate')
+  }
+})
 
-const resetVerse = () => {
-  selectedVerse.value = ''
-}
-
-const handleBookChange = () => {
-  resetChapter()
-}
-
-const handleChapterChange = async () => {
-  resetVerse()
-  if (!selectedBook.value || !selectedChapter.value) return
-
-  loading.value = true
-  error.value = ''
-
-  try {
-    const response = await getChapterVerses(selectedBook.value, selectedChapter.value)
-    verses.value = Array.from({ length: response.chapter.verses.length }, (_, i) => i + 1) 
-    texts.value = response.chapter.verses
-  } catch (err) {
-    error.value = 'Erro ao carregar versículos. Por favor, tente novamente.';
-    console.error('Error:', err)
-  } finally {
-    loading.value = false
+const handleSubmit = () => {
+  if (isValidEmail.value) {
+    authStore.setEmail(email.value)
+    router.push('/generate')
   }
 }
-
-const handleGenerateStudy = async () => {
-  if (!selectedBook.value || !selectedChapter.value || !selectedVerse.value) return;
-
-  generatingStudy.value = true;
-  error.value = '';
-
-  try {
-    const content = await generateStudy(
-      selectedBook.value,
-      selectedChapter.value,
-      selectedVerse.value,
-      texts.value[Number(selectedVerse.value) - 1].text
-    );
-    
-    const book = bookData.books.find(b => b.value === selectedBook.value)
-    
-    setStudy({
-      book: book?.title ?? '1 Néfi',
-      chapter: selectedChapter.value,
-      verse: selectedVerse.value.toString(),
-      content
-    });
-
-    router.push('/study');
-  } catch (err) {
-    error.value = 'Erro ao gerar estudo. Por favor, tente novamente.';
-    console.error('Error:', err);
-  } finally {
-    generatingStudy.value = false;
-  }
-};
 </script>
 
 <style scoped>
 .v-card {
   background-color: #faf7f5;
+}
+
+.large-input :deep(.v-field__input) {
+  font-size: 1.1rem !important;
+  min-height: 52px !important;
+  padding: 8px 16px !important;
+}
+
+.feature-list {
+  font-size: 1.1rem;
+}
+
+@media (max-width: 600px) {
+  .large-input :deep(.v-field__input) {
+    font-size: 1rem !important;
+    min-height: 48px !important;
+    padding: 6px 12px !important;
+  }
+
+  .feature-list {
+    font-size: 1rem;
+  }
+
+  .v-card {
+    padding: 16px !important;
+  }
 }
 </style>

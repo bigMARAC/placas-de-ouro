@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { updateLastAccess } from './supabaseService';
+import { useAuthStore } from '../store/authStore';
 
 const API_URL = '/api/maritaca';
 const API_KEY = import.meta.env.VITE_MARITACA_API_KEY;
@@ -19,9 +21,53 @@ interface MaritacaRequest {
   model: string;
 }
 
-export const generateStudy = async (book: string, chapter: string, verse: string, text: string): Promise<string> => {
+export type StudyDepth = 'basic' | 'intermediate' | 'advanced';
+export type StudyStyle = 'historical' | 'spiritual' | 'literary';
+
+interface StudyOptions {
+  depth: StudyDepth;
+  style: StudyStyle;
+}
+
+const getDepthDescription = (depth: StudyDepth): string => {
+  switch (depth) {
+    case 'basic':
+      return 'de forma clara e concisa, focando nos pontos principais';
+    case 'intermediate':
+      return 'de forma detalhada, explorando os principais aspectos e suas conexões';
+    case 'advanced':
+      return 'de forma aprofundada e acadêmica, explorando detalhes, nuances e conexões complexas';
+  }
+}
+
+const getStylePrompt = (style: StudyStyle): string => {
+  switch (style) {
+    case 'historical':
+      return 'Foque principalmente no contexto histórico, cultural e geográfico da passagem, incluindo informações sobre costumes, práticas e eventos relacionados da época.';
+    case 'spiritual':
+      return 'Foque principalmente na aplicação espiritual e prática do versículo, incluindo princípios doutrinários, insights pessoais e como aplicar esses ensinamentos em nossa vida hoje.';
+    case 'literary':
+      return 'Foque principalmente nos aspectos literários do texto, incluindo análise de estrutura, estilo, linguagem, simbolismo e conexões com outros textos sagrados.';
+  }
+}
+
+export const generateStudy = async (
+  book: string, 
+  chapter: string, 
+  verse: string, 
+  text: string,
+  options: StudyOptions
+): Promise<string> => {
+  const authStore = useAuthStore();
+  
+  const depthDesc = getDepthDescription(options.depth)
+  const stylePrompt = getStylePrompt(options.style)
+
   const prompt = `Você é um teólogo com 30 anos de experiência no estudo do Livro de Mórmon.
-Analise ${book} ${chapter}:${verse} de forma aprofundada, em português, utilizando técnicas de exegese e hermenêutica. Baseie-se na tradução original em inglês, explorando o contexto histórico, cultural e doutrinário.
+Analise ${book} ${chapter}:${verse} ${depthDesc}, em português, utilizando técnicas de exegese e hermenêutica. Baseie-se na tradução original em inglês.
+
+${stylePrompt}
+
 Essa explicação é para uma pessoa que acredita no Livro de Mórmon como escritura sagrada, portanto, a análise deve ser respeitosa e não conter ideias contrárias à sua autenticidade ou veracidade.
 Não inclua o texto do versículo, apenas a explicação em Markdown, estruturada ponto a ponto, sem introduções ou títulos gerais.
 Tradução original do versículo: "${text}"`
@@ -47,6 +93,15 @@ Tradução original do versículo: "${text}"`
         }
       }
     );
+
+    // Update last access in Supabase after successful study generation
+    if (authStore.email) {
+      try {
+        await updateLastAccess(authStore.email)
+      } catch (error) {
+        console.error('Failed to update last access:', error)
+      }
+    }
 
     return response.data.choices[0].message.content;
   } catch (error) {
