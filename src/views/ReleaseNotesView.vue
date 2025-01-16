@@ -29,13 +29,13 @@
               <div>
                 <div class="d-flex align-center mb-2">
                   <v-chip
-                    :color="getVersionColor(release.type)"
+                    :color="getVersionColor(release.type as ReleaseType)"
                     size="small"
                     class="mr-2 font-weight-medium"
                   >
                     <v-icon
-                      v-if="getVersionIcon(release.type)"
-                      :icon="getVersionIcon(release.type)"
+                      v-if="getVersionIcon(release.type as ReleaseType)"
+                      :icon="getVersionIcon(release.type as ReleaseType)"
                       size="small"
                       start
                       class="mr-1"
