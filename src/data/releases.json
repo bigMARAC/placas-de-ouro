@@ -1,0 +1,52 @@
+{
+  "releases": [
+    {
+      "version": "0.2.0",
+      "date": "Em breve",
+      "type": "coming-soon",
+      "description": "Recursos planejados para a próxima versão",
+      "features": [
+        "Modo escuro para melhor leitura noturna",
+        "Compartilhamento de estudos com outros usuários",
+        "Histórico de estudos gerados",
+        "Opção de exportar estudos em PDF",
+        "Notificações de novas atualizações"
+      ]
+    },
+    {
+      "version": "0.1.0",
+      "date": "16/01/2025",
+      "type": "beta",
+      "description": "Aprimoramento geral do aplicativo",
+      "features": [
+        "Agora o aplicativo coleta o e-mail do usuário para uma experiência mais personalizada.",
+        "Usuários podem salvar estudos como favoritos para acessá-los facilmente.",
+        "É possível escolher o tipo de estudo, oferecendo mais controle ao usuário.",
+        "A interface foi redesenhada para ser mais moderna e intuitiva."
+      ]
+    },
+    {
+      "version": "0.0.2",
+      "date": "14/01/2025",
+      "type": "update",
+      "description": "Melhoria no prompt para análise teológica",
+      "features": [
+        "Prompt revisado para maior clareza e objetividade",
+        "Respostas direcionadas a um público que acredita no Livro de Mórmon",
+        "Formatação em Markdown para melhor organização",
+        "Análises mais profundas com exegese e hermenêutica"
+      ]
+    },
+    {
+      "version": "0.0.1",
+      "date": "13/01/2025",
+      "type": "first",
+      "description": "Versão beta para testes",
+      "features": [
+        "Interface básica implementada",
+        "Seleção de livros, capítulos e versículos",
+        "Estrutura inicial do aplicativo"
+      ]
+    }
+  ]
+}

@@ -1,57 +1,3 @@
-<script setup lang="ts">
-import { useDisplay } from 'vuetify'
-const { mobile } = useDisplay()
-
-const releases = [
-  {
-    version: '0.1.0',
-    date: '16/01/2025',
-    type: 'beta',
-    description: 'Aprimoramento geral do aplicativo',
-    features: [
-      'Agora o aplicativo coleta o e-mail do usuário para uma experiência mais personalizada.',
-      'Usuários podem salvar estudos como favoritos para acessá-los facilmente.',
-      'É possível escolher o tipo de estudo, oferecendo mais controle ao usuário.',
-      'A interface foi redesenhada para ser mais moderna e intuitiva.',
-    ]
-  },
-  {
-    version: '0.0.2',
-    date: '14/01/2025',
-    type: 'update',
-    description: 'Melhoria no prompt para análise teológica',
-    features: [
-      'Prompt revisado para maior clareza e objetividade',
-      'Respostas direcionadas a um público que acredita no Livro de Mórmon',
-      'Formatação em Markdown para melhor organização',
-      'Análises mais profundas com exegese e hermenêutica'
-    ]
-  },
-  {
-    version: '0.0.1',
-    date: '13/01/2025',
-    type: 'first',
-    description: 'Versão beta para testes',
-    features: [
-      'Interface básica implementada',
-      'Seleção de livros, capítulos e versículos',
-      'Estrutura inicial do aplicativo'
-    ]
-  }
-]
-
-const getVersionColor = (type: string) => {
-  switch (type) {
-    case 'major':
-      return 'success'
-    case 'beta':
-      return 'warning'
-    default:
-      return 'primary'
-  }
-}
-</script>
-
 <template>
   <v-container class="pa-4 mt-4">
     <v-row justify="center">
@@ -87,6 +33,13 @@ const getVersionColor = (type: string) => {
                     size="small"
                     class="mr-2 font-weight-medium"
                   >
+                    <v-icon
+                      v-if="getVersionIcon(release.type)"
+                      :icon="getVersionIcon(release.type)"
+                      size="small"
+                      start
+                      class="mr-1"
+                    />
                     v{{ release.version }}
                   </v-chip>
                   <span class="text-caption text-medium-emphasis">
@@ -101,27 +54,15 @@ const getVersionColor = (type: string) => {
           </v-card-item>
 
           <v-card-text class="pt-2">
-            <v-list class="bg-transparent pa-0">
-              <v-list-item
+            <ul class="release-features pa-0">
+              <li
                 v-for="(feature, index) in release.features"
                 :key="index"
-                class="pa-0 mb-2"
-                density="compact"
+                class="mb-2"
               >
-                <template v-slot:prepend>
-                  <v-icon
-                    :color="getVersionColor(release.type)"
-                    size="small"
-                    class="mr-2"
-                  >
-                    mdi-check-circle-outline
-                  </v-icon>
-                </template>
-                <div class="text-body-2">
-                  {{ feature }}
-                </div>
-              </v-list-item>
-            </v-list>
+                {{ feature }}
+              </li>
+            </ul>
           </v-card-text>
         </v-card>
       </v-col>
@@ -129,26 +70,66 @@ const getVersionColor = (type: string) => {
   </v-container>
 </template>
 
+<script setup lang="ts">
+import { useDisplay } from 'vuetify'
+import releaseData from '../data/releases.json'
+
+const { mobile } = useDisplay()
+
+interface Release {
+  version: string
+  date: string
+  type: 'major' | 'beta' | 'update' | 'first' | 'coming-soon'
+  description: string
+  features: string[]
+}
+
+const releases = releaseData.releases as Release[]
+
+const getVersionColor = (type: string): string => {
+  switch (type) {
+    case 'major':
+      return 'success'
+    case 'beta':
+      return 'warning'
+    case 'coming-soon':
+      return 'info'
+    default:
+      return 'primary'
+  }
+}
+
+const getVersionIcon = (type: string): string | undefined => {
+  switch (type) {
+    case 'coming-soon':
+      return 'mdi-clock-outline'
+    default:
+      return undefined
+  }
+}
+</script>
+
 <style scoped>
-:deep(.v-list-item) {
-  min-height: 24px !important;
+.release-features {
+  list-style-type: none;
+  margin: 0;
 }
 
-:deep(.v-list) {
-  --v-list-padding: 0;
+.release-features li {
+  position: relative;
+  padding-left: 1.5em;
 }
 
-.v-card {
-  transition: transform 0.2s ease-in-out;
-}
-
-.v-card:hover {
-  transform: translateY(-2px);
+.release-features li::before {
+  content: "•";
+  position: absolute;
+  left: 0.5em;
+  color: rgba(0, 0, 0, 0.6);
 }
 
 @media (max-width: 600px) {
-  .v-card {
-    transform: none !important;
+  :deep(.text-h4) {
+    font-size: 1.5rem !important;
   }
 }
 </style>
